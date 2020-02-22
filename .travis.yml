@@ -13,7 +13,7 @@ after_success:
     - docker build -t mateuspadua/multi-nginx ./nginx
     - docker build -t mateuspadua/multi-server ./server
     - docker build -t mateuspadua/multi-worker ./worker
-    
+
     # Log in to the docker HUB
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
@@ -22,3 +22,18 @@ after_success:
     - docker push mateuspadua/multi-nginx
     - docker push mateuspadua/multi-server
     - docker push mateuspadua/multi-worker
+
+before_deploy: "echo 'ready?'"
+
+deploy:
+    edge: true
+    provider: elasticbeanstalk
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    region: us-west-1
+    app: multi-docker
+    env: MultiDocker-env
+    bucket_name: elasticbeanstalk-us-west-1-893851628906
+    bucket_path: docker-multi
+    on:
+        branch: "master"
